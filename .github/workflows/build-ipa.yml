@@ -1,3 +1,4 @@
+
 name: Build IPA from your own Spotify IPA
 
 on:
@@ -35,15 +36,16 @@ jobs:
           submodules: recursive
 
       - name: Install tools
-         run: |
-    brew install make dpkg ldid
-    python3 -m pip install --break-system-packages git+https://github.com/asdfzxcvbn/pyzule-rw.git gdown
+        run: |
+          brew install make dpkg ldid
+          python3 -m pip install --break-system-packages git+https://github.com/asdfzxcvbn/pyzule-rw.git gdown
 
-    - name: Download IPA
-  run: |
-    mkdir -p ipa
-    gdown --fuzzy "${{ inputs.ipa_url }}" -O ipa/spotify.ipa
-    case "$(file --mime-type -b ipa/spotify.ipa)" in application/zip|application/x-ios-app) ;; *) echo "::error::Not an IPA"; exit 1 ;; esac
+      - name: Download IPA
+        run: |
+          mkdir -p ipa
+          gdown --fuzzy "${{ inputs.ipa_url }}" -O ipa/spotify.ipa
+          case "$(file --mime-type -b ipa/spotify.ipa)" in application/zip|application/x-ios-app) ;; *) echo "::error::Not an IPA"; exit 1 ;; esac
+
       - run: make release
 
       - uses: actions/upload-artifact@v5
