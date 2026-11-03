@@ -41,10 +41,15 @@ jobs:
           python3 -m pip install --break-system-packages git+https://github.com/asdfzxcvbn/pyzule-rw.git gdown
 
       - name: Download IPA
+        env:
+          IPA_URL: ${{ inputs.ipa_url }}
         run: |
           mkdir -p ipa
-          gdown --fuzzy "${{ inputs.ipa_url }}" -O ipa/spotify.ipa
-          case "$(file --mime-type -b ipa/spotify.ipa)" in application/zip|application/x-ios-app) ;; *) echo "::error::Not an IPA"; exit 1 ;; esac
+          gdown "$IPA_URL" -O ipa/spotify.ipa
+          if ! unzip -tq ipa/spotify.ipa >/dev/null 2>&1; then
+            echo "::error::The downloaded file is not a valid IPA/ZIP. Check the Google Drive link and sharing permissions."
+            exit 1
+          fi
 
       - run: make release
 
